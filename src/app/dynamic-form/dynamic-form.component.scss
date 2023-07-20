@@ -1,0 +1,34 @@
+.title {
+  text-align: center;
+}
+form.dynamic-form {
+  margin-top: 5rem;
+  padding: 4rem;
+  gap: 20px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .dynamic-controls {
+    padding: 2rem 4rem;
+    section {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .form-raw-data {
+    textarea {
+      min-width: 20rem;
+      min-height: 15rem;
+    }
+  }
+
+  .sub-title{
+    margin-bottom: 1rem;
+  }
+}
+.example-form-field {
+  width: 200px;
+}

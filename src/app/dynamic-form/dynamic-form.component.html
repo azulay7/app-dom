@@ -1,0 +1,87 @@
+<div class="container">
+  <div class="title">
+    <h1>Dynamic Form Builder</h1>
+  </div>
+  <form class="dynamic-form" [formGroup]="dynamicForm"  (ngSubmit)="onSubmit()">
+    <h3 class="sub-title">Add Dynamic Control</h3>
+
+    <div class="header">
+      <mat-form-field appearance="outline">
+        <mat-label>Input Type</mat-label>
+        <select matNativeControl formControlName="controlType">
+          <option *ngFor="let inputType of INPUT_TYPES" [value]="inputType">
+            {{ inputType }}
+          </option>
+        </select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Input Name</mat-label>
+        <input matInput type="text" formControlName="controlName" />
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="isRequired">Required</mat-slide-toggle>
+
+      <div>
+        <mat-form-field class="options" *ngIf="OPTIONS_TYPES.includes(controlType?.value)">
+          <input
+            matInput
+            placeholder="Options (comma-separated)"
+            formControlName="options"
+          />
+        </mat-form-field>
+      </div>
+     
+
+      <button
+        mat-raised-button
+        (click)="addFormField()"
+        [disabled]="!controlType.valid || !controlName.valid || !options.valid">
+        Add Control <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div class="dynamic-controls">
+      <h2 class="sub-title">Dynamic Controls List</h2>
+      <ng-container *ngFor="let field of formFields; let i = index">
+        <section>
+          <ng-container [ngSwitch]="field.controlType" formArrayName="dynamicControls">
+            
+            <mat-form-field *ngSwitchCase="'text'" class="example-form-field" >
+              <mat-label>{{ field.name }}</mat-label>
+              <input matInput type="text" [formControlName]="i" />
+            </mat-form-field>
+            <mat-checkbox *ngSwitchCase="'checkbox'" [formControlName]="i">{{ field.name }}</mat-checkbox>
+            <mat-radio-group *ngSwitchCase="'radio'" [formControlName]="i">
+              <mat-radio-button *ngFor="let option of field.options" [value]="option">
+                {{ option }}
+              </mat-radio-button>
+            </mat-radio-group>
+            <mat-form-field *ngSwitchCase="'select'" >
+              <mat-label>{{ field.name }}</mat-label>
+              <select matNativeControl [formControlName]="i">
+                <option *ngFor="let option of field.options" [value]="option">
+                  {{ option }}
+                </option>
+              </select>
+            </mat-form-field>
+            
+          </ng-container>
+
+          <mat-error *ngIf="!dynamicControls.at(i).valid && dynamicControls.at(i).errors?.['required']">This field is required</mat-error>
+        </section>
+      </ng-container>
+
+      <button
+        mat-raised-button
+        type="submit"
+        [disabled]="!dynamicControls.valid || dynamicControls.length == 0">
+        Submit <mat-icon>send</mat-icon>
+      </button>
+    </div>
+
+    <div class="form-raw-data">
+      <textarea>{{ formData }}</textarea>
+    </div>
+  </form>
+</div>
