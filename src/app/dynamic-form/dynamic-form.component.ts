@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { FormField } from '../form-field.interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss']
 })
-export class DynamicFormComponent implements OnInit {
+export class DynamicFormComponent implements OnInit, OnDestroy {
   INPUT_TYPES = ['text', 'checkbox', 'radio', 'select'];
   OPTIONS_TYPES = ['radio', 'select'];
+
   dynamicForm: FormGroup = {} as FormGroup;
   formFields: FormField[] = [];
-
+  unsubscribe$: Subject<void> = new Subject();
   get controlType() {
     return this.dynamicForm.controls["controlType"] as FormControl;
   }
@@ -37,7 +39,7 @@ export class DynamicFormComponent implements OnInit {
     return (this.dynamicForm.controls["dynamicControls"] as FormArray).controls as FormControl[];
   }
 
-  formData:string='';
+  formData: string = '';
 
   convertToFormControl(absCtrl: AbstractControl | null): FormControl {
     const ctrl = absCtrl as FormControl;
@@ -56,19 +58,21 @@ export class DynamicFormComponent implements OnInit {
       isRequired: [false, [Validators.required]],
       dynamicControls: this.fb.array([])
     })
-    this.dynamicForm.valueChanges.subscribe(changes => {
-
+    this.dynamicForm.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(changes => {
       this.dynamicForm.controls['options'].clearValidators();
-
       if (this.OPTIONS_TYPES.includes(changes['controlType'])) {
         this.dynamicForm.controls['options'].addValidators(Validators.required);
-
       }
     })
   }
-  onSubmit() {
-    this.formData= JSON.stringify(this.formFields.map((ff,i)=>({name:ff.name, value:this.dynamicControls.value[i]})),null, 2) //JSON.stringify(this.dynamicControls.value, null, 2);
 
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  onSubmit() {
+    this.formData = JSON.stringify(this.formFields.map((ff, i) => ({ name: ff.name, value: this.dynamicControls.value[i] })), null, 2);
   }
 
   addFormField(): void {
@@ -92,7 +96,7 @@ export class DynamicFormComponent implements OnInit {
 
   createFieldGroup(field: FormField): FormControl {
     const validators = field.required ? [Validators.required] : [];
-    return this.fb.control([],validators);
+    return this.fb.control(null, validators);
   }
 
   updateForm(): void {
