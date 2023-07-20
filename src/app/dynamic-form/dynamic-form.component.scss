@@ -1,10 +1,15 @@
 .title {
+  margin-top: 6rem;
   text-align: center;
 }
 form.dynamic-form {
-  margin-top: 5rem;
+  margin-top: 2rem;
   padding: 4rem;
-  gap: 20px;
+  gap: 2rem;
+
+  .sub-title{
+    margin-bottom: 1rem;
+  }
 
   .header {
     display: flex;
@@ -13,6 +18,14 @@ form.dynamic-form {
 
   .dynamic-controls {
     padding: 2rem 4rem;
+    .sub-title{
+      margin-bottom: 2rem;
+    }
+    .header {
+      display: flex;
+      justify-content: flex-start;
+      gap: 2rem;
+    }
     section {
       margin-bottom: 1rem;
     }
@@ -20,14 +33,12 @@ form.dynamic-form {
 
   .form-raw-data {
     textarea {
-      min-width: 20rem;
+      min-width: 50rem;
       min-height: 15rem;
     }
   }
 
-  .sub-title{
-    margin-bottom: 1rem;
-  }
+ 
 }
 .example-form-field {
   width: 200px;

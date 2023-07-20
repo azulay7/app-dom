@@ -8,11 +8,11 @@
     <div class="header">
       <mat-form-field appearance="outline">
         <mat-label>Input Type</mat-label>
-        <select matNativeControl formControlName="controlType">
-          <option *ngFor="let inputType of INPUT_TYPES" [value]="inputType">
+        <mat-select  formControlName="controlType">
+          <mat-option *ngFor="let inputType of INPUT_TYPES" [value]="inputType">
             {{ inputType }}
-          </option>
-        </select>
+          </mat-option>
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -42,14 +42,24 @@
     </div>
 
     <div class="dynamic-controls">
-      <h2 class="sub-title">Dynamic Controls List</h2>
+      <div class="header">
+        <h2 class="sub-title">Dynamic Controls List</h2>
+        <button
+          mat-raised-button
+          type="submit"
+          [disabled]="!dynamicControls.valid || dynamicControls.length == 0">
+          Submit <mat-icon>send</mat-icon>
+        </button>
+      </div>
+      
       <ng-container *ngFor="let field of formFields; let i = index">
         <section>
           <ng-container [ngSwitch]="field.controlType" formArrayName="dynamicControls">
             
-            <mat-form-field *ngSwitchCase="'text'" class="example-form-field" >
+            <mat-form-field *ngSwitchCase="'text'" appearance="outline" >
               <mat-label>{{ field.name }}</mat-label>
               <input matInput type="text" [formControlName]="i" />
+              <mat-error *ngIf="!dynamicControls.at(i).valid && dynamicControls.at(i).errors?.['required']">This field is required</mat-error>
             </mat-form-field>
             <mat-checkbox *ngSwitchCase="'checkbox'" [formControlName]="i" [checked]="false">{{ field.name }}</mat-checkbox>
             <mat-radio-group *ngSwitchCase="'radio'" [formControlName]="i">
@@ -57,31 +67,27 @@
                 {{ option }}
               </mat-radio-button>
             </mat-radio-group>
-            <mat-form-field *ngSwitchCase="'select'" >
+            <mat-form-field *ngSwitchCase="'select'"  appearance="outline" >
               <mat-label>{{ field.name }}</mat-label>
-              <select matNativeControl [formControlName]="i">
-                <option *ngFor="let option of field.options" [value]="option">
+              <mat-select matNativeControl [formControlName]="i">
+                <mat-option *ngFor="let option of field.options" [value]="option">
                   {{ option }}
-                </option>
-              </select>
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="!dynamicControls.at(i).valid && dynamicControls.at(i).errors?.['required']">This field is required</mat-error>
+
             </mat-form-field>
             
           </ng-container>
 
-          <mat-error *ngIf="!dynamicControls.at(i).valid && dynamicControls.at(i).errors?.['required']">This field is required</mat-error>
         </section>
       </ng-container>
-
-      <button
-        mat-raised-button
-        type="submit"
-        [disabled]="!dynamicControls.valid || dynamicControls.length == 0">
-        Submit <mat-icon>send</mat-icon>
-      </button>
+      <div class="form-raw-data">
+        <textarea>{{ formData }}</textarea>
+      </div>
+      
     </div>
 
-    <div class="form-raw-data">
-      <textarea>{{ formData }}</textarea>
-    </div>
+
   </form>
 </div>
